@@ -1,0 +1,11 @@
+apply plugin: 'java'
+
+task(runServer, dependsOn: 'classes', type: JavaExec) {
+    main = 'sample.Server'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task(runClient, dependsOn: 'classes', type: JavaExec) {
+    main = 'sample.Client'
+    classpath = sourceSets.main.runtimeClasspath
+}
