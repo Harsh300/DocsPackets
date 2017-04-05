@@ -1,17 +1,43 @@
-package sample;
+package main.java.csci2020u.sample;
 
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.sql.Connection;
 
 /**
  * Created by rohil on 05/04/17.
  */
 public class Server {
+    public int port;
+    private ServerSocket ServerSocket = null;
 
-    public void Server()
-    {
 
+    public Server(int port) throws IOException {
+        port = port;
+        ServerSocket = new ServerSocket(port);
+
+    }
+
+
+    public void handleRequests() throws IOException {
+        Socket ClientSocket = ServerSocket.accept();
+        ConnectionHandler CH = new ConnectionHandler("10.160.9.87",port,ClientSocket);
+
+        Thread handlerThread = new Thread(CH);
+
+        handlerThread.start();
+
+        try
+        {
+            handlerThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
     public static void main(String[] args) throws IOException {
         java.lang.System.out.println("Server");
+        Server Server = new Server(8080);
     }
+
 }

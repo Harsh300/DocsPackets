@@ -1,4 +1,4 @@
-package sample;
+package main.java.csci2020u.sample;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -6,7 +6,7 @@ import java.net.Socket;
 /**
  * Created by rohil on 05/04/17.
  */
-public class ConnectionHandler {
+public class ConnectionHandler implements Runnable{
         private Socket socket = null;
         private String hostname = null;
         private int port;
@@ -24,8 +24,9 @@ public class ConnectionHandler {
         {
 
         }
-        public void run()
-        {
 
-        }
+    @Override
+    public void run() {
+
+    }
 }

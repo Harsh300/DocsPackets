@@ -1,4 +1,4 @@
-package sample;
+package main.java.csci2020u.sample;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
