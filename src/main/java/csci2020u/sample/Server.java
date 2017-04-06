@@ -9,12 +9,12 @@ import java.sql.Connection;
  * Created by rohil on 05/04/17.
  */
 public class Server {
-    public int port;
+    public int port=8080;
     private ServerSocket ServerSocket = null;
 
 
     public Server(int port) throws IOException {
-        port = port;
+        this.port = port;
         ServerSocket = new ServerSocket(port);
 
     }
@@ -22,7 +22,7 @@ public class Server {
 
     public void handleRequests() throws IOException {
         Socket ClientSocket = ServerSocket.accept();
-        ConnectionHandler CH = new ConnectionHandler("10.160.9.87",port,ClientSocket);
+        ConnectionHandler CH = new ConnectionHandler("10.160.60.30",port,ClientSocket);
 
         Thread handlerThread = new Thread(CH);
 
@@ -37,7 +37,8 @@ public class Server {
     }
     public static void main(String[] args) throws IOException {
         java.lang.System.out.println("Server");
-        Server Server = new Server(8080);
+        Server server = new Server(8080);
+        server.handleRequests();
     }
 
 }

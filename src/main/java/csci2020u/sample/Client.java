@@ -1,6 +1,8 @@
 package main.java.csci2020u.sample;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -52,15 +54,13 @@ public class Client extends Application{
 
         Label nameLabel = new Label("Username:");
         GridPane.setConstraints(nameLabel,0,0);
-
         TextField nameInput = new TextField();
         nameInput.setPromptText("Username");
         GridPane.setConstraints(nameInput,1,0);
-        name = nameInput.getText();
+
 
         Label passwordLabel = new Label("Password:");
         GridPane.setConstraints(passwordLabel,0,1);
-
         PasswordField passwordInput = new PasswordField();
         passwordInput.setPromptText("password");
         GridPane.setConstraints(passwordInput,1,1);
@@ -69,11 +69,9 @@ public class Client extends Application{
 
         Button signupButton = new Button("Sign up");
         GridPane.setConstraints(signupButton,1,3);
-
         Button returnButton = new Button("Return to last page");
         GridPane.setConstraints(returnButton,2,3);
         returnButton.setOnAction(e -> window.setScene(mainScene));
-
         registerLayout.getChildren().addAll(nameInput,nameLabel,passwordInput,passwordLabel,signupButton,returnButton);
         registerScene = new Scene(registerLayout,400,200);
 
@@ -82,9 +80,9 @@ public class Client extends Application{
         loginLayout.setVgap(8);
         loginLayout.setHgap(10);
 
+        /**************************SIGN UP SCREEN************************/
         Label name1Label = new Label("Username:");
         GridPane.setConstraints(name1Label,0,0);
-
         TextField name1Input = new TextField();
         name1Input.setPromptText("Username");
         GridPane.setConstraints(name1Input,1,0);
@@ -92,14 +90,22 @@ public class Client extends Application{
 
         Label password1Label = new Label("Password:");
         GridPane.setConstraints(password1Label,0,1);
-
         PasswordField password1Input = new PasswordField();
         password1Input.setPromptText("password");
         GridPane.setConstraints(password1Input,1,1);
 
         Button signinButton = new Button("Sign in");
         GridPane.setConstraints(signinButton,1,2);
-        signinButton.setOnAction(e -> login(this.name+" "+this.password));
+        signinButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                name = name1Input.getText();
+                password= password1Input.getText();
+                login(name+" "+password);
+                System.out.println(name+" "+password);
+
+            }
+        });
 
         Button return1Button = new Button("Return to last page");
         GridPane.setConstraints(return1Button,2,2);
@@ -121,7 +127,6 @@ public class Client extends Application{
     }
 
     public void login(String msg){
-        System.out.print("log in pressed");
         try{
             Socket socket = new Socket(this.hostname,this.port);
             PrintWriter out = new PrintWriter(socket.getOutputStream());
@@ -140,9 +145,8 @@ public class Client extends Application{
 
     public static void main(String[] args) throws IOException {
         Client Client = new Client();
-
-        Client.Client("10.160.9.87",1201);
+        Client.Client("10.160.60.30",8080);
         launch(args);
-        java.lang.System.out.println("Client");
+
     }
 }

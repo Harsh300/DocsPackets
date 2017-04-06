@@ -19,7 +19,6 @@ public class ConnectionHandler implements Runnable{
         {
             this.hostname = hostname;
             this.port = port;
-            ClientSocket = socket;
             handleRequest();
 
         }
