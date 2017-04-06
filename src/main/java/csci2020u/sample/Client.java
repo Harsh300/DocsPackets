@@ -12,7 +12,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.applet.Applet;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Created by rohil on 05/04/17.
@@ -22,7 +27,8 @@ public class Client extends Application{
     Scene mainScene,registerScene, loginScene;
     private int port;
     private String hostname = "";
-
+    private String name = "";
+    private String password = "";
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -50,6 +56,7 @@ public class Client extends Application{
         TextField nameInput = new TextField();
         nameInput.setPromptText("Username");
         GridPane.setConstraints(nameInput,1,0);
+        name = nameInput.getText();
 
         Label passwordLabel = new Label("Password:");
         GridPane.setConstraints(passwordLabel,0,1);
@@ -57,13 +64,8 @@ public class Client extends Application{
         PasswordField passwordInput = new PasswordField();
         passwordInput.setPromptText("password");
         GridPane.setConstraints(passwordInput,1,1);
+        password = passwordInput.getText();
 
-        Label repeatpasswordLabel = new Label("Repeat Password");
-        GridPane.setConstraints(repeatpasswordLabel,0,2);
-
-        PasswordField repeatPassword = new PasswordField();
-        repeatPassword.setPromptText("repeat password");
-        GridPane.setConstraints(repeatPassword,1,2);
 
         Button signupButton = new Button("Sign up");
         GridPane.setConstraints(signupButton,1,3);
@@ -72,7 +74,7 @@ public class Client extends Application{
         GridPane.setConstraints(returnButton,2,3);
         returnButton.setOnAction(e -> window.setScene(mainScene));
 
-        registerLayout.getChildren().addAll(nameInput,nameLabel,passwordInput,passwordLabel,repeatpasswordLabel,repeatPassword,signupButton,returnButton);
+        registerLayout.getChildren().addAll(nameInput,nameLabel,passwordInput,passwordLabel,signupButton,returnButton);
         registerScene = new Scene(registerLayout,400,200);
 
         GridPane loginLayout = new GridPane();
@@ -87,6 +89,7 @@ public class Client extends Application{
         name1Input.setPromptText("Username");
         GridPane.setConstraints(name1Input,1,0);
 
+
         Label password1Label = new Label("Password:");
         GridPane.setConstraints(password1Label,0,1);
 
@@ -96,6 +99,7 @@ public class Client extends Application{
 
         Button signinButton = new Button("Sign in");
         GridPane.setConstraints(signinButton,1,2);
+        signinButton.setOnAction(e -> login(this.name+" "+this.password));
 
         Button return1Button = new Button("Return to last page");
         GridPane.setConstraints(return1Button,2,2);
@@ -115,10 +119,30 @@ public class Client extends Application{
         this.hostname = ip;
         this.port = port;
     }
+
+    public void login(String msg){
+        System.out.print("log in pressed");
+        try{
+            Socket socket = new Socket(this.hostname,this.port);
+            PrintWriter out = new PrintWriter(socket.getOutputStream());
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out.println(msg);
+            out.flush();
+            out.close();
+            in.close();
+            socket.close();
+        }catch (UnknownHostException e){
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         Client Client = new Client();
+
         Client.Client("10.160.9.87",1201);
-        java.lang.System.out.println("Client");
         launch(args);
+        java.lang.System.out.println("Client");
     }
 }
