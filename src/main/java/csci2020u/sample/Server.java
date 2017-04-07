@@ -9,7 +9,7 @@ import java.sql.Connection;
  * Created by rohil on 05/04/17.
  */
 public class Server {
-    public int port=8080;
+    public int port=1201;
     private ServerSocket ServerSocket = null;
 
 
@@ -37,7 +37,7 @@ public class Server {
     }
     public static void main(String[] args) throws IOException {
         java.lang.System.out.println("Server");
-        Server server = new Server(8080);
+        Server server = new Server(1201);
         server.handleRequests();
     }
 

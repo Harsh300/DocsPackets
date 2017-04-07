@@ -135,7 +135,7 @@ public class Client extends Application{
             out.flush();
             out.close();
             in.close();
-            socket.close();
+            //socket.close();
         }catch (UnknownHostException e){
             e.printStackTrace();
         }catch (IOException e){

@@ -19,6 +19,7 @@ public class ConnectionHandler implements Runnable{
         {
             this.hostname = hostname;
             this.port = port;
+            this.ClientSocket=ClientSocket;
             handleRequest();
 
         }
@@ -31,8 +32,8 @@ public class ConnectionHandler implements Runnable{
                 BufferedReader br = new BufferedReader(new InputStreamReader(ClientSocket.getInputStream()));
                 String mainRequestLine = "";
                 mainRequestLine = br.readLine();
-                System.out.print(mainRequestLine.toString());
-                br.close();
+                System.out.println(mainRequestLine.toString());
+                //br.close();
                 StringTokenizer requestTokenizer = new StringTokenizer(mainRequestLine);
 
                 String command = null;
@@ -40,17 +41,20 @@ public class ConnectionHandler implements Runnable{
                 String Password = null;
 
                 command = requestTokenizer.nextToken();
+                System.out.println(command);
                 Username = requestTokenizer.nextToken();
+                System.out.println(Username);
                 Password = requestTokenizer.nextToken();
+                System.out.println(Password);
 
                 if (command.equals("Login"))
                 {
                     String path = "/home/harshan/Desktop/Server/LoginInfo";
                     File checkLoginFile = new File(path);
                     BufferedReader LoginBR = new BufferedReader(new FileReader(path));
-                    String checkUsername = null;
-                    String checkPassword = null;
-                    String information = null;
+                    String checkUsername = "";
+                    String checkPassword = "";
+                    String information = "";
 
                     try
                     {
@@ -58,15 +62,21 @@ public class ConnectionHandler implements Runnable{
                         StringTokenizer usernameAndPasswordTokenizer = new StringTokenizer(information);
                         checkUsername = usernameAndPasswordTokenizer.nextToken();
                         checkPassword = usernameAndPasswordTokenizer.nextToken();
-                        if (Username == checkUsername || Password == checkPassword)
+                        System.out.println(checkUsername);
+                        System.out.println(checkPassword);
+
+                        if (Username.equals(checkUsername) || Password.equals(checkPassword))
                         {
                             PrintWriter out = new PrintWriter(ClientSocket.getOutputStream());
+                            System.out.println("True");
                             out.println("True");
+
                         }
                         else
                         {
-                            PrintWriter out = new PrintWriter(ClientSocket.getOutputStream());
-                            out.println("False");
+                            PrintWriter out1 = new PrintWriter(ClientSocket.getOutputStream());
+                            out1.println("False");
+                            System.out.println("False");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
