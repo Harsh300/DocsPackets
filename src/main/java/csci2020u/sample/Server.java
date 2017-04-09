@@ -22,7 +22,7 @@ public class Server {
 
     public void handleRequests() throws IOException {
         Socket ClientSocket = ServerSocket.accept();
-        ConnectionHandler CH = new ConnectionHandler("10.160.60.30",port,ClientSocket);
+        ConnectionHandler CH = new ConnectionHandler("192.168.0.109",port,ClientSocket);
 
         Thread handlerThread = new Thread(CH);
 

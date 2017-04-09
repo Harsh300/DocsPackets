@@ -71,10 +71,12 @@ public class ConnectionHandler implements Runnable{
                 String mainRequestLine = "";
                 mainRequestLine = br.readLine();
                 System.out.println(mainRequestLine.toString());
-                //br.close();
+
+                output.close();
+                ClientSocket.close();
+                br.close();
+
                 StringTokenizer requestTokenizer = new StringTokenizer(mainRequestLine);
-
-
                 command = requestTokenizer.nextToken();
                 System.out.println(command);
                 Username = requestTokenizer.nextToken();

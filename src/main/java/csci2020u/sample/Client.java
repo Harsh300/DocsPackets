@@ -7,11 +7,16 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.applet.Applet;
+import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -26,26 +31,53 @@ public class Client extends Application {
     private String hostname = "";
     private String name = "";
     private String password = "";
+    private String fileName="";
     @FXML
     private TextArea editor;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
         window = primaryStage;
-        Label label1 = new Label("Welcome to the program");
-        Label label2 = new Label("click the button to choose what you want! :)");
+        GridPane mainLayout = new GridPane();
+        mainLayout.setPadding(new Insets(10, 10, 10, 10));
+        mainLayout.setVgap(8);
+        mainLayout.setHgap(10);
+
+        Label label1 = new Label("              Welcome to DOCS online editor");
+        GridPane.setConstraints(label1, 0, 0);
+        Label label2 = new Label("                      Log in in and begin editing");
+        GridPane.setConstraints(label2, 0, 3);
+
+        Label label3 = new Label("                      Sign up and log in next time");
+        GridPane.setConstraints(label3, 0, 4);
+
         Button registerButton = new Button("Register");
-        registerButton.setOnAction(e -> window.setScene(registerScene));
-
+        GridPane.setConstraints(registerButton, 0, 4);
+        registerButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                window.setScene(registerScene);
+                window.setTitle("Registration");
+            }
+        });
         Button loginButton = new Button("Login");
-        loginButton.setOnAction(e -> window.setScene(loginScene));
+        GridPane.setConstraints(loginButton, 0, 3);
+        loginButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                window.setScene(loginScene);
+                window.setTitle("Log in");
+            }
+        });
+        mainLayout.getChildren().addAll(label1, label2, label3, registerButton, loginButton);
+        mainScene = new Scene(mainLayout, 350, 200);
+        window.setTitle("Main Menu");
 
-        VBox mainLayout = new VBox(20);
-        mainLayout.getChildren().addAll(label1, label2, registerButton, loginButton);
-        mainScene = new Scene(mainLayout, 300, 200);
+        /**************************REGISTRATION SCREEN************************/
 
         GridPane registerLayout = new GridPane();
-        registerLayout.setPadding(new Insets(10, 10, 10, 10));
+        registerLayout.setPadding(new Insets(30, 10, 10, 40));
         registerLayout.setVgap(8);
         registerLayout.setHgap(10);
 
@@ -59,63 +91,54 @@ public class Client extends Application {
         Label passwordLabel = new Label("Password:");
         GridPane.setConstraints(passwordLabel, 0, 1);
         PasswordField passwordInput = new PasswordField();
-        passwordInput.setPromptText("password");
+        passwordInput.setPromptText("Password");
         GridPane.setConstraints(passwordInput, 1, 1);
         password = passwordInput.getText();
 
+        Label passwordLabel2 = new Label("Re-type:");
+        GridPane.setConstraints(passwordLabel2, 0, 2);
+        PasswordField passwordInput2 = new PasswordField();
+        passwordInput2.setPromptText("Password");
+        GridPane.setConstraints(passwordInput2, 1, 2);
 
         Button signupButton = new Button("Sign up");
         GridPane.setConstraints(signupButton, 1, 3);
+        signupButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(passwordInput2.getText().equals(passwordInput.getText())) {
+                    System.out.println("Passwords match");
+                    password=passwordInput.getText();
+                }
+                else{
+                    System.out.println("Password do not match");
+                }
+            }
+        });
         Button returnButton = new Button("Return to last page");
-        GridPane.setConstraints(returnButton, 2, 3);
-        returnButton.setOnAction(e -> window.setScene(mainScene));
-        registerLayout.getChildren().addAll(nameInput, nameLabel, passwordInput, passwordLabel, signupButton, returnButton);
-        registerScene = new Scene(registerLayout, 400, 200);
+        GridPane.setConstraints(returnButton, 1, 4);
+        returnButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                window.setScene(mainScene);
+                window.setTitle("Main Menu");
+            }
+        });
+        registerLayout.getChildren().addAll(nameInput, nameLabel, passwordInput, passwordLabel,passwordLabel2,passwordInput2, signupButton, returnButton);
+        registerScene = new Scene(registerLayout, 350, 200);
 
+        /**************************LOG IN SCREEN************************/
         GridPane loginLayout = new GridPane();
-        loginLayout.setPadding(new Insets(10, 10, 10, 10));
+        loginLayout.setPadding(new Insets(30, 10, 10, 40));
         loginLayout.setVgap(8);
         loginLayout.setHgap(10);
 
-        GridPane newDocLayout = new GridPane();
-        newDocLayout.setPadding(new Insets(10, 10, 10, 10));
-        newDocLayout.setVgap(8);
-        newDocLayout.setHgap(10);
 
-        GridPane LoadDocLayout = new GridPane();
-        LoadDocLayout.setPadding(new Insets(10, 10, 10, 10));
-        LoadDocLayout.setVgap(8);
-        LoadDocLayout.setHgap(10);
-
-        GridPane afterLoginSceneLayout = new GridPane();
-        afterLoginSceneLayout.setPadding(new Insets(10, 10, 10, 10));
-        afterLoginSceneLayout.setVgap(8);
-        afterLoginSceneLayout.setHgap(10);
-
-        /*GridPane editorLayout = new GridPane();
-        editorLayout.setPadding(new Insets(10, 10, 10, 10));
-        editorLayout.setVgap(8);
-        editorLayout.setHgap(10);*/
-
-        /**************************SIGN UP SCREEN************************/
         Label name1Label = new Label("Username:");
         GridPane.setConstraints(name1Label, 0, 0);
         TextField name1Input = new TextField();
         name1Input.setPromptText("Username");
         GridPane.setConstraints(name1Input, 1, 0);
-
-        Label newFileLabel = new Label("Enter File Name:");
-        GridPane.setConstraints(newFileLabel, 0, 0);
-        TextField newFileInput = new TextField();
-        newFileInput.setPromptText("Enter File Name");
-        GridPane.setConstraints(newFileInput, 1, 0);
-
-        Label LoadFileLabel = new Label("Enter File Name:");
-        GridPane.setConstraints(newFileLabel, 0, 0);
-        TextField LoadFileInput = new TextField();
-        LoadFileInput.setPromptText("Enter File Name");
-        GridPane.setConstraints(LoadFileInput, 1, 0);
-
 
         Label password1Label = new Label("Password:");
         GridPane.setConstraints(password1Label, 0, 1);
@@ -135,6 +158,25 @@ public class Client extends Application {
 
             }
         });
+        Button returnLogin = new Button("Return to last page");
+        GridPane.setConstraints(returnLogin, 1, 3);
+        returnLogin.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                window.setScene(mainScene);
+                window.setTitle("Main Menu");
+            }
+        });
+        loginLayout.getChildren().addAll(name1Input, name1Label, password1Input, password1Label, signinButton, returnLogin);
+        loginScene = new Scene(loginLayout, 350, 200);
+
+
+        /**************************AFTER LOG IN SCREEN************************/
+        GridPane afterLogin = new GridPane();
+        afterLogin.setPadding(new Insets(10, 10, 10, 10));
+        afterLogin.setVgap(8);
+        afterLogin.setHgap(10);
+
 
         Button newDocButton = new Button("New File");
         GridPane.setConstraints(newDocButton, 1, 2);
@@ -142,6 +184,7 @@ public class Client extends Application {
             @Override
             public void handle(ActionEvent event) {
                 window.setScene(newDocScene);
+                window.setTitle("File Selection");
                /* name = newFileInput.getText();
                 String path = "/home/harshan/Desktop/Server/" + name;
                 File file = new File(path);
@@ -152,163 +195,144 @@ public class Client extends Application {
             }
         });
 
-        Button makeNewDocButton = new Button("Enter");
-        GridPane.setConstraints(newDocButton, 1, 2);
-        newDocButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                name = newFileInput.getText();
-               /* String path = "/home/harshan/Desktop/Server/" + name;
-                File file = new File(path);
-                String content = readFileContents(file);
-                editor.setText(content);
-                System.out.println(name);*/
-                String command = "New " + name;
-
-                try {
-                    Socket clientSocket = new Socket(hostname,port);
-                    PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
-                    BufferedReader bw = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    printWriter.println(command);
-                    String result = bw.readLine();
-                    if(result.equals("True"))
-                    {
-                        //open a blank file in the editor
-                    }
-                    if(result.equals("False"))
-                    {
-                        Label FileFound = new Label("File with that name exists. Choose another name.");
-                        GridPane.setConstraints(FileFound, 0, 4);
-                        //print error message that reads "File with that name exists"
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
-        Button LoadDocButton = new Button("Enter");
-        GridPane.setConstraints(newDocButton, 1, 2);
-        newDocButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                //Look for file in the server directory
-                //if it exists use the code below to open
-                // if is does not exist print error message
-
-
-                name = LoadFileInput.getText();
-                /*String path = "/home/harshan/Desktop/Server/" + name;
-                File file = new File(path);
-                String content = readFileContents(file);
-                editor.setText(content);
-                System.out.println(name);*/
-                String command = "Load " + name;
-                try {
-                    Socket clientSocket = new Socket(hostname, port);
-                    PrintWriter pw = new PrintWriter(clientSocket.getOutputStream());
-                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    pw.println(command);
-                    String result = in.readLine();
-                    if(result.equals("True"))
-                    {
-                        //open editor with the file content
-                    }
-                    if(result.equals("False"))
-                    {
-                        Label FileNotFound = new Label("File with that name does not exist. Try again and check spelling.");
-                        GridPane.setConstraints(FileNotFound, 0, 4);
-                        // print error message that reads file not found
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                /*name = LoadFileInput.getText();
-                String path = "/home/harshan/Desktop/Server/" + name;
-                File file = new File(path);
-                String content = readFileContents(file);
-                editor.setText(content);
-                System.out.println(name);*/
-
-            }
-        });
-
-        Button return1Button = new Button("Return to last page");
-        GridPane.setConstraints(return1Button, 2, 2);
-        return1Button.setOnAction(e -> window.setScene(mainScene));
-
-        loginLayout.getChildren().addAll(name1Input, name1Label, password1Input, password1Label, signinButton, return1Button);
-        loginScene = new Scene(loginLayout, 400, 200);
-
-
-        newDocLayout.getChildren().addAll(newFileInput, newFileLabel, makeNewDocButton);
-        newDocScene = new Scene(newDocLayout, 400, 200);
-
-        LoadDocLayout.getChildren().addAll(LoadFileInput, LoadFileLabel, LoadDocButton);
-        LoadDocScene = new Scene(LoadDocLayout, 400, 200);
-
         Button LoadFileButton = new Button("Load File");
-        GridPane.setConstraints(LoadFileButton, 1, 2);
-        newDocButton.setOnAction(new EventHandler<ActionEvent>() {
+        GridPane.setConstraints(LoadFileButton, 2, 2);
+        LoadFileButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                window.setScene(LoadDocScene);
+
+                /*
                 name = newFileInput.getText();
                 String path = "/home/harshan/Desktop/Server/" + name;
                 File file = new File(path);
                 String content = readFileContents(file);
                 editor.setText(content);
                 System.out.println(name);
+                */
+            }
+        });
+
+        Button returnLoadFile = new Button("Return to last page");
+        GridPane.setConstraints(returnLoadFile, 3, 2);
+        returnLoadFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                window.setScene(loginScene);
+                window.setTitle("Log in");
 
             }
         });
 
-        afterLoginSceneLayout.getChildren().addAll(newDocButton,LoadFileButton,LoadFileInput,LoadFileLabel);
-        afterLoginScene = new Scene(afterLoginSceneLayout,400,200);
+        afterLogin.getChildren().addAll(returnLoadFile,newDocButton,LoadFileButton);
+        afterLoginScene = new Scene(afterLogin, 350, 100);
 
-       /* editorLayout.getChildren().addAll(editor);
-        editorScene = new Scene(editorLayout, 400, 200); */
+        /**************************NEW FILE SCREEN************************/
+        GridPane newFileLayout = new GridPane();
+        newFileLayout.setPadding(new Insets(10, 10, 10, 10));
+        newFileLayout.setVgap(8);
+        newFileLayout.setHgap(10);
+
+        Label fileNameLabel = new Label("Enter document name: ");
+        GridPane.setConstraints(fileNameLabel, 0, 1);
+        TextField fileNameField = new TextField();
+        GridPane.setConstraints(fileNameField, 1, 1);
+
+        Button fileNameButton = new Button("Next");
+        GridPane.setConstraints(fileNameButton, 2, 1);
+        fileNameButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                window.setScene(editorScene);
+                fileName=fileNameField.getText();
+                window.setTitle(fileName);
+
+            }
+        });
+
+        newFileLayout.getChildren().addAll(fileNameLabel,fileNameField,fileNameButton);
+        newDocScene = new Scene(newFileLayout, 425, 100);
+
+        /**************************OPEN FILE SCREEN************************/
+        GridPane openFileLayout = new GridPane();
+        openFileLayout.setPadding(new Insets(10, 10, 10, 10));
+        openFileLayout.setVgap(8);
+        openFileLayout.setHgap(10);
+
+        Label openNameLabel = new Label("Enter document name: ");
+        GridPane.setConstraints(openNameLabel, 0, 1);
+        TextField openNameField = new TextField();
+        GridPane.setConstraints(openNameField, 1, 1);
+
+        Button openNameButton = new Button("Next");
+        GridPane.setConstraints(openNameButton, 2, 1);
+        openNameButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                window.setScene(editorScene);
+                fileName=openNameField.getText();
+                window.setTitle(fileName);
+
+            }
+        });
+
+        openFileLayout.getChildren().addAll(openNameLabel,openNameField,openNameButton);
+        LoadDocScene = new Scene(openFileLayout, 425, 100);
+
+        /****************************EDITOR SCREEN*****************************/
+        GridPane editorLayout = new GridPane();
+        editorLayout.setPadding(new Insets(20, 10, 10, 10));
+        editorLayout.setVgap(8);
+        editorLayout.setHgap(10);
+
+        TextArea textArea = new TextArea();
+        textArea.setPrefRowCount(20);
+        editorLayout.getChildren().addAll(textArea);
+
+        editorScene = new Scene(editorLayout,500,400);
 
         window.setScene(mainScene);
-        window.setTitle("Project");
         window.show();
     }
 
-
+/**********************************************************************************************************************/
     public void Client(String ip, int port) {
         this.hostname = ip;
         this.port = port;
     }
 
     public void login(String msg) {
-        try {
+        /*try {
             Socket socket = new Socket(this.hostname, this.port);
             PrintWriter out = new PrintWriter(socket.getOutputStream());
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out.println(msg);
-            String result = in.readLine();
+            out.flush();
+            out.close();
+            in.close();
+            socket.close();
+*/          String result="True";
             if (result.equals("True")) {
-                Button newDocButton = new Button("New document");
-                newDocButton.setOnAction(e -> window.setScene(newDocScene));
+                window.setScene(afterLoginScene);
+                window.setTitle("File Selection");
             }
             if (result.equals("False")) {
+                /*
                 Label incorrectInfo = new Label("Incorrect password or username. Please try again.");
                 GridPane.setConstraints(incorrectInfo, 0, 4);
-                /*Alert alert = new Alert(Alert.AlertType.ERROR);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error Dialog");
                 alert.setHeaderText("Error");
                 alert.setContentText("Incorrect username or password");
 
-                alert.showAndWait();*/
+                alert.showAndWait();
+
             }
-            out.flush();
-            out.close();
-            in.close();
-            //socket.close();
+
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();*/
         }
     }
 
@@ -330,7 +354,7 @@ public class Client extends Application {
 
     public static void main(String[] args) throws IOException {
         Client Client = new Client();
-        Client.Client("10.160.60.30",8080);
+        Client.Client("192.168.0.109",1201);
         launch(args);
 
     }
