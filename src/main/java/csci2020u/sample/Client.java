@@ -27,13 +27,14 @@ import java.net.UnknownHostException;
 public class Client extends Application {
     Stage window;
     Scene mainScene, registerScene, loginScene, newDocScene, editorScene, afterLoginScene,LoadDocScene;
-    private int port;
-    private String hostname = "";
+    public static int port;
+    public static String hostname;
     private String name = "";
     private String password = "";
     private String fileName="";
     @FXML
     private TextArea editor;
+    private Socket ClientSocket = null;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -153,7 +154,11 @@ public class Client extends Application {
             public void handle(ActionEvent event) {
                 name = name1Input.getText();
                 password = password1Input.getText();
-                login(name + " " + password);
+                try {
+                    login("Login " + name + " " + password);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 System.out.println(name + " " + password);
 
             }
@@ -243,9 +248,16 @@ public class Client extends Application {
         fileNameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                window.setScene(editorScene);
+
+                ;
                 fileName=fileNameField.getText();
-                window.setTitle(fileName);
+                try {
+                    newfile(fileName);
+                    window.setTitle(fileName);
+                    window.setScene(editorScene);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -269,9 +281,15 @@ public class Client extends Application {
         openNameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                window.setScene(editorScene);
                 fileName=openNameField.getText();
-                window.setTitle(fileName);
+                System.out.println("IS IT???");
+                try {
+                    newfile(fileName);
+                    window.setTitle(fileName);
+                    window.setScene(editorScene);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -295,15 +313,31 @@ public class Client extends Application {
         window.show();
     }
 
-/**********************************************************************************************************************/
-    public void Client(String ip, int port) {
-        this.hostname = ip;
-        this.port = port;
+    /**********************************************************************************************************************/
+    public void Client(String ip, int gate) {
+        hostname = ip;
+        port = gate;
     }
 
-    public void login(String msg) {
-        /*try {
-            Socket socket = new Socket(this.hostname, this.port);
+    public void newfile(String msg) throws IOException {
+        System.out.println("Creating new file");
+
+        Socket socket3 = new Socket(hostname,8082);
+        PrintWriter out3 = new PrintWriter(socket3.getOutputStream());
+        BufferedReader in3 = new BufferedReader(new InputStreamReader(socket3.getInputStream()));
+        String command = "new " + msg + " .txt";
+
+        out3.println(command);
+        out3.flush();
+        out3.close();
+        in3.close();
+        socket3.close();
+
+    }
+    public void login(String msg) throws IOException {
+        System.out.println("sending command to server "+hostname + port);
+        try {
+            Socket socket = new Socket(hostname, 8080);
             PrintWriter out = new PrintWriter(socket.getOutputStream());
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out.println(msg);
@@ -311,13 +345,16 @@ public class Client extends Application {
             out.close();
             in.close();
             socket.close();
-*/          String result="True";
+
+            String result = LoginResponse();
+            //result = "True";
+            System.out.println("result: "+result);
             if (result.equals("True")) {
                 window.setScene(afterLoginScene);
                 window.setTitle("File Selection");
             }
             if (result.equals("False")) {
-                /*
+
                 Label incorrectInfo = new Label("Incorrect password or username. Please try again.");
                 GridPane.setConstraints(incorrectInfo, 0, 4);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -332,8 +369,31 @@ public class Client extends Application {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();*/
+            e.printStackTrace();
         }
+    }
+    public String LoginResponse()
+    {
+        String message = "";
+        System.out.println("Trying to read from the server "+hostname+"8081");
+        try {
+            Socket socket2 = new Socket(hostname,8081);
+            PrintWriter out2 = new PrintWriter(socket2.getOutputStream());
+            //System.out.println("Connected to the socket");
+            BufferedReader in2 = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
+            //System.out.println("Connected to the socket2");
+            //System.out.println(hostname + " " + port);
+            message = in2.readLine();
+            System.out.println(message);
+            out2.flush();
+            out2.close();
+            in2.close();
+            socket2.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Server sent back: "+message);
+        return message;
     }
 
     private String readFileContents(File file) {
@@ -354,7 +414,7 @@ public class Client extends Application {
 
     public static void main(String[] args) throws IOException {
         Client Client = new Client();
-        Client.Client("192.168.0.109",1201);
+        Client.Client("localhost",8080);
         launch(args);
 
     }
