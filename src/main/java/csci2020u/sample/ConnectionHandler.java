@@ -27,7 +27,7 @@ public class ConnectionHandler implements Runnable{
         }
 
         public String Login() throws FileNotFoundException {
-            String path = "/home/harshan/Desktop/Server/LoginInfo";
+            String path = "/home/rohil/Desktop/Server/LoginInfo";
             File checkLoginFile = new File(path);
             BufferedReader LoginBR = new BufferedReader(new FileReader(path));
             String checkUsername = "";
@@ -55,6 +55,19 @@ public class ConnectionHandler implements Runnable{
             }
             return "false";
         }
+
+        public String FileExist(String path)
+        {
+            File file = new File(path);
+            if(file.exists())
+            {
+                return "True";
+            }
+            else
+            {
+                return "False";
+            }
+        }
         public void handleRequest3() throws IOException {
             System.out.println("About to accept filename from client");
             PrintWriter output3 = new PrintWriter(ClientSocket.getOutputStream());
@@ -71,10 +84,30 @@ public class ConnectionHandler implements Runnable{
             PrintWriter out2 = new PrintWriter(ClientSocket.getOutputStream());
             BufferedReader in2 = new BufferedReader(new InputStreamReader(ClientSocket.getInputStream()));
             out2.println("True");
-            System.out.println("Sent to client in response: "+ "TRUE");
+            System.out.println("This Login is valid!");
             out2.close();
             ClientSocket.close();
             in2.close();
+        }
+
+        public void handleRequest4() throws IOException {
+            PrintWriter out4 = new PrintWriter(ClientSocket.getOutputStream());
+            BufferedReader in4 = new BufferedReader(new InputStreamReader(ClientSocket.getInputStream()));
+            out4.println("True");
+            System.out.println("Sent to client in response: "+ "False");
+            out4.close();
+            ClientSocket.close();
+            in4.close();
+        }
+
+        public void handleRequest5() throws IOException {
+            PrintWriter out4 = new PrintWriter(ClientSocket.getOutputStream());
+            BufferedReader in4 = new BufferedReader(new InputStreamReader(ClientSocket.getInputStream()));
+            out4.println("False");
+            System.out.println("Sent to client in response: "+ "False");
+            out4.close();
+            ClientSocket.close();
+            in4.close();
         }
         public String handleRequest()
         {   String loginStatus="False";
@@ -84,7 +117,7 @@ public class ConnectionHandler implements Runnable{
                 BufferedReader br = new BufferedReader(new InputStreamReader(ClientSocket.getInputStream()));
                 String mainRequestLine = "";
                 mainRequestLine = br.readLine();
-                System.out.println(mainRequestLine.toString());
+                System.out.println("Command sent to server by client: " + mainRequestLine.toString());
 
                 output.close();
                 ClientSocket.close();
@@ -105,7 +138,7 @@ public class ConnectionHandler implements Runnable{
                     String information = null;
                     String checkUsername = null;
                     String checkPassword = null;
-                    String path = "/home/harshan/Desktop/Server/LoginInfo";
+                    String path = "/home/rohil/Desktop/Server/LoginInfo";
                     File checkLoginFile = new File(path);
                     BufferedReader RegisterBR = new BufferedReader(new FileReader(path));
                     information = RegisterBR.readLine();
@@ -127,10 +160,22 @@ public class ConnectionHandler implements Runnable{
                 if(command.equals("new")){
                     String fileName = Username;
                     String extention=Password;
-                    String path="/home/harshan/Desktop/Server/SavedFiles/"+fileName+extention;
+                    String path="/home/rohil/Desktop/Server/SavedFiles/"+fileName+extention;
                     File file = new File(path);
                     file.createNewFile();
-                    System.out.println(path);
+                    return "False";
+                }
+                if(command.equals("Load"))
+                {
+
+                    String Filename = Username;
+                    String extention = Password;
+                    String dir = "/home/rohil/Desktop/Server/SavedFiles/"+Filename+extention;
+                    File file = new File(dir);
+                    String FileStatus = FileExist(dir);
+                    System.out.println("File does not exist");
+                    return FileStatus;
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();

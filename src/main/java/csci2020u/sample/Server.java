@@ -14,6 +14,7 @@ public class Server {
     private ServerSocket ServerSocket = null;
     private ServerSocket ServerSocket2 = null;
     private ServerSocket ServerSocket3 = null;
+    private ServerSocket ServerSocket4 = null;
 
 
 
@@ -22,6 +23,7 @@ public class Server {
         ServerSocket = new ServerSocket(port);
         ServerSocket2 = new ServerSocket(8081);
         ServerSocket3 = new ServerSocket(8082);
+        ServerSocket4 = new ServerSocket(8083);
 
     }
 
@@ -56,27 +58,64 @@ public class Server {
             e.printStackTrace();
         }
     }
-    public void handleRequests3() throws IOException {
+    public String handleRequests3() throws IOException {
         Socket ClientSocket3 = ServerSocket3.accept();
         ConnectionHandler CH = new ConnectionHandler("localhost",8082,ClientSocket3);
-        CH.handleRequest();
+        String status = CH.handleRequest();
         Thread handlerThread3 = new Thread(CH);
-        CH.handleRequest3();
         handlerThread3.start();
         try {
             handlerThread3.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return status;
+    }
 
+    public void handleRequests4() throws IOException {
+        Socket ClientSocket4 = ServerSocket4.accept();
+        ConnectionHandler CH = new ConnectionHandler("localhost",8083,ClientSocket4);
 
+        Thread handlerThread4 = new Thread(CH);
+        CH.handleRequest2();
+        handlerThread4.start();
+
+        try {
+            handlerThread4.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleRequests5() throws IOException {
+        Socket ClientSocket4 = ServerSocket4.accept();
+        ConnectionHandler CH = new ConnectionHandler("localhost",8083,ClientSocket4);
+
+        Thread handlerThread5 = new Thread(CH);
+        CH.handleRequest5();
+        handlerThread5.start();
+
+        try {
+            handlerThread5.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
     public static void main(String[] args) throws IOException {
         java.lang.System.out.println("Server");
-        Server server = new Server(8080);
+        Server server = new Server(1201);
         if(server.handleRequests().equals("True")) {
             server.handRequests2();
-            server.handleRequests3();
+            String hehe = server.handleRequests3();
+            System.out.println(hehe);
+            if(server.handleRequests3().equals("True"))
+            {
+                server.handleRequests4();
+            }
+            else
+            {
+                server.handleRequests5();
+            }
 
         }
         else{

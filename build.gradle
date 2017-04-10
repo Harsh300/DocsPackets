@@ -1,11 +1,11 @@
 apply plugin: 'java'
 
 task(runServer, dependsOn: 'classes', type: JavaExec) {
-    main = 'sample.Server'
+    main = 'main.java.csci2020u.sample.Server'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task(runClient, dependsOn: 'classes', type: JavaExec) {
-    main = 'sample.Client'
+    main = 'main.java.csci2020u.sample.Client'
     classpath = sourceSets.main.runtimeClasspath
 }

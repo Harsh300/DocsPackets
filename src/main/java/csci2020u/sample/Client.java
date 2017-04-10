@@ -284,9 +284,17 @@ public class Client extends Application {
                 fileName=openNameField.getText();
                 System.out.println("IS IT???");
                 try {
-                    newfile(fileName);
-                    window.setTitle(fileName);
-                    window.setScene(editorScene);
+                    loadfile(fileName);
+                    String open = FileStatus();
+                    if(open.equals("False"))
+                    {
+                        System.out.println("File not found");
+                    }
+                    else
+                    {
+                        window.setTitle(fileName);
+                        window.setScene(editorScene);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -319,6 +327,21 @@ public class Client extends Application {
         port = gate;
     }
 
+    public void loadfile(String Filename) throws IOException {
+        System.out.println("Looking for old file");
+
+        Socket Socket4 = new Socket(hostname, 8082);
+        PrintWriter out4 = new PrintWriter(Socket4.getOutputStream());
+        BufferedReader in4 = new BufferedReader(new InputStreamReader(Socket4.getInputStream()));
+        String command = "Load " + Filename + " .txt";
+        System.out.println(command);
+        out4.println(command);
+        out4.flush();
+        out4.close();
+        in4.close();
+        Socket4.close();
+    }
+
     public void newfile(String msg) throws IOException {
         System.out.println("Creating new file");
 
@@ -337,7 +360,7 @@ public class Client extends Application {
     public void login(String msg) throws IOException {
         System.out.println("sending command to server "+hostname + port);
         try {
-            Socket socket = new Socket(hostname, 8080);
+            Socket socket = new Socket(hostname, 1201);
             PrintWriter out = new PrintWriter(socket.getOutputStream());
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out.println(msg);
@@ -395,6 +418,27 @@ public class Client extends Application {
         System.out.println("Server sent back: "+message);
         return message;
     }
+    public String FileStatus() throws IOException {
+
+        try {
+            System.out.println("Working");
+            Socket Sock = new Socket(hostname,8083);
+            System.out.println("connected");
+            PrintWriter writer = new PrintWriter(Sock.getOutputStream());
+            BufferedReader reading = new BufferedReader(new InputStreamReader(Sock.getInputStream()));
+            String status = reading.readLine();
+            System.out.println(status);
+            writer.flush();
+            writer.close();
+            reading.close();
+            Sock.close();
+            return status;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "False";
+
+    }
 
     private String readFileContents(File file) {
         StringBuffer buffer = new StringBuffer();
@@ -414,7 +458,7 @@ public class Client extends Application {
 
     public static void main(String[] args) throws IOException {
         Client Client = new Client();
-        Client.Client("localhost",8080);
+        Client.Client("localhost",1201);
         launch(args);
 
     }
