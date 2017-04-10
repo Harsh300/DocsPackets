@@ -4,6 +4,8 @@ Rohil Arya
 Harshan Mohanaraj
 Chen Pi
 
+Edit mode makes readme clearer 
+
 This program is a document editor only for registered users. 
 
 Things you must do before running:
